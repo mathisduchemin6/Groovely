@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groovely — V4</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121a10;--bg2:#1a2418;--bg3:#202e1e;--border:#2e3e2c;--accent:#7ab84a;--accent2:#a8d878;--gold:#d4a843;--text:#e8f0e0;--muted:#7a9068;--dim:#4a6040;--serif:'Playfair Display',Georgia,serif;--sans:'Inter',system-ui,sans-serif;}
+[data-theme="bordeaux"]{--bg:#170e0e;--bg2:#211414;--bg3:#2c1a1a;--border:#4a2a2a;--accent:#e8724a;--accent2:#f5a080;--text:#f5e6d0;--muted:#a08070;--dim:#7a5040;}
+[data-theme="ardoise"]{--bg:#0f1520;--bg2:#151d2b;--bg3:#1a2535;--border:#2a3850;--accent:#5b8dee;--accent2:#8fb8f5;--text:#e8eef8;--muted:#6a7a9a;--dim:#4a5a7a;}
+[data-theme="noir"]{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--border:#2a2a2a;--accent:#e8c547;--accent2:#f5d878;--text:#f0ece0;--muted:#7a7668;--dim:#4a4640;}
+[data-theme="violet"]{--bg:#110f1a;--bg2:#1a1525;--bg3:#221c30;--border:#3a3050;--accent:#9b7aee;--accent2:#c0a8f8;--text:#ece8f8;--muted:#8a7aaa;--dim:#5a4a80;}
+[data-theme="creme"]{--bg:#f5f0e8;--bg2:#ede8dc;--bg3:#e5dece;--border:#ccc4b0;--accent:#8b5e3c;--accent2:#b07848;--text:#2a1f14;--muted:#7a6050;--dim:#a09080;}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+.app{display:grid;grid-template-columns:220px 1fr 260px;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+.logo{padding:20px 18px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.logo-mark{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-vinyl{width:16px;height:16px;border-radius:50%;background:conic-gradient(var(--bg) 0deg,var(--bg3) 40deg,var(--bg) 80deg,var(--bg3) 120deg,var(--bg) 160deg,var(--bg3) 200deg,var(--bg) 240deg,var(--bg3) 280deg,var(--bg) 320deg,var(--bg3) 360deg);display:flex;align-items:center;justify-content:center;}
+.logo-hole{width:5px;height:5px;border-radius:50%;background:var(--accent);}
+.logo-text{font-family:var(--serif);font-size:20px;font-style:italic;color:var(--text);}
+.nav{padding:8px 0;flex:1;display:flex;flex-direction:column;gap:1px;overflow-y:auto;}
+.nav-section{font-size:9px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;padding:10px 18px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;color:var(--muted);cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:var(--bg3);color:var(--text);font-weight:500;border-left-color:var(--accent);}
+.nav-icon{font-size:14px;width:16px;text-align:center;flex-shrink:0;}
+.sidebar-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;font-family:var(--sans);}
+.av-sm{width:32px;height:32px;font-size:12px;}
+.av-md{width:44px;height:44px;font-size:15px;}
+.av-lg{width:60px;height:60px;font-size:20px;}
+.av-g{background:var(--bg3);color:var(--accent);border:1px solid var(--border);}
+.av-a{background:rgba(212,168,67,.15);color:#d4a843;border:1px solid rgba(212,168,67,.3);}
+.av-t{background:rgba(74,202,170,.12);color:#4acaaa;border:1px solid rgba(74,202,170,.25);}
+.av-r{background:rgba(224,112,80,.12);color:#e07050;border:1px solid rgba(224,112,80,.25);}
+.footer-name{font-size:13px;font-weight:600;color:var(--text);}
+.footer-sub{font-size:11px;color:var(--muted);}
+.new-btn{margin-left:auto;background:var(--accent);color:var(--bg);border:none;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);white-space:nowrap;}
+.new-btn:hover{opacity:.85;}
+
+/* MAIN */
+.main{overflow-y:auto;background:var(--bg);}
+.page{display:none;flex-direction:column;}
+.page.active{display:flex;}
+.page-inner{padding:24px;display:flex;flex-direction:column;gap:24px;}
+
+/* SEARCH BAR */
+.search-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:10;}
+.search-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 14px 10px 36px;border-radius:12px;outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:var(--accent);}
+.search-input::placeholder{color:var(--dim);}
+.search-wrap{position:relative;flex:1;}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);}
+.search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;z-index:100;display:none;}
+.search-results.open{display:block;}
+.search-result-item{display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border);}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:var(--bg3);}
+.sr-cover{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--bg3);flex-shrink:0;}
+.sr-title{font-size:13px;font-weight:600;color:var(--text);}
+.sr-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.sr-add{margin-left:auto;padding:4px 10px;border-radius:10px;border:1px solid var(--border);font-size:11px;color:var(--muted);cursor:pointer;background:transparent;white-space:nowrap;}
+.sr-add:hover{border-color:var(--accent);color:var(--accent);}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.page-title{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--text);}
+.tabs{display:flex;background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:3px;gap:0;}
+.tab{padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;border-radius:20px;font-weight:500;transition:all .15s;}
+.tab.active{background:var(--bg3);color:var(--text);}
+
+/* SECTION HEADER (horizontal scroll) */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-title{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--text);}
+.see-all{font-size:12px;color:var(--accent);cursor:pointer;font-weight:500;}
+.see-all:hover{text-decoration:underline;}
+
+/* HORIZONTAL SCROLL ROW */
+.h-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;}
+.h-scroll::-webkit-scrollbar{height:3px;}
+.h-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ALBUM CARD (small - horizontal) */
+.album-card-sm{flex-shrink:0;width:140px;cursor:pointer;transition:transform .2s;}
+.album-card-sm:hover{transform:translateY(-3px);}
+.album-cover-sm{width:140px;height:140px;border-radius:14px;object-fit:cover;background:var(--bg3);display:block;border:1px solid var(--border);}
+.album-cover-sm.placeholder{display:flex;align-items:center;justify-content:center;}
+.album-info-sm{padding:8px 2px 0;}
+.album-title-sm{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.album-artist-sm{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.album-year-sm{font-size:10px;color:var(--dim);margin-top:2px;}
+
+/* ALBUM CARD (medium - grid) */
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;}
+.album-card-md{cursor:pointer;transition:transform .2s;}
+.album-card-md:hover{transform:translateY(-3px);}
+.album-cover-md{width:100%;aspect-ratio:1;border-radius:14px;object-fit:cover;background:var(--bg3);display:block;border:1px solid var(--border);}
+.album-cover-md.placeholder{display:flex;align-items:center;justify-content:center;}
+.album-info-md{padding:8px 2px 0;}
+.album-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;margin-bottom:4px;}
+.badge-g{background:rgba(122,184,74,.15);color:var(--accent);}
+.badge-a{background:rgba(212,168,67,.15);color:#d4a843;}
+.badge-r{background:rgba(224,80,80,.15);color:#e05050;}
+.album-title-md{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.album-artist-md{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* FEED CARDS */
+.feed-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:18px;transition:border-color .2s,transform .2s;}
+.feed-card:hover{border-color:var(--accent);transform:translateY(-1px);}
+.feed-card-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.feed-card-user{flex:1;}
+.feed-card-username{font-size:14px;font-weight:600;color:var(--text);}
+.feed-card-action{font-size:12px;color:var(--muted);margin-top:1px;}
+.feed-card-time{font-size:11px;color:var(--dim);}
+.feed-album-row{display:flex;gap:14px;margin-bottom:12px;align-items:flex-start;}
+.feed-album-cover{width:64px;height:64px;border-radius:12px;object-fit:cover;background:var(--bg3);flex-shrink:0;border:1px solid var(--border);}
+.feed-album-cover.placeholder{display:flex;align-items:center;justify-content:center;}
+.feed-album-title{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.feed-album-artist{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.stars{display:flex;gap:3px;}
+.star{width:11px;height:11px;border-radius:3px;}
+.star.f{background:var(--accent);}
+.star.e{background:var(--bg3);}
+.genre-pill{padding:3px 10px;border-radius:16px;font-size:11px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);white-space:nowrap;align-self:flex-start;}
+.review-text{font-family:var(--serif);font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;font-style:italic;}
+.review-text em{font-style:normal;color:var(--text);font-weight:600;}
+.card-footer{display:flex;align-items:center;padding-top:10px;border-top:1px solid var(--border);}
+.action{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:16px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s;font-weight:500;}
+.action:hover{background:var(--bg3);color:var(--text);}
+.action.liked{color:var(--accent);}
+.pill-btn{margin-left:auto;padding:5px 12px;border-radius:16px;border:1px solid var(--border);font-size:12px;color:var(--muted);cursor:pointer;background:transparent;font-family:var(--sans);transition:all .15s;}
+.pill-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* STATS ROW */
+.stats-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:14px 16px;border-top:2px solid var(--accent);}
+.stat-card-val{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--accent);}
+.stat-card-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* WISHLIST TABLE */
+.wish-table{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.wish-table-head{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 90px;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.wish-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 90px;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;align-items:center;cursor:pointer;transition:background .15s;}
+.wish-row:last-child{border-bottom:none;}
+.wish-row:hover{background:var(--bg3);}
+.wish-artist{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;}
+.wish-title{font-family:var(--serif);font-size:13px;color:var(--text);}
+.prio{padding:3px 9px;border-radius:10px;font-size:11px;font-weight:500;display:inline-block;}
+.prio-h{background:rgba(224,80,80,.15);color:#e05050;}
+.prio-m{background:rgba(212,168,67,.15);color:#d4a843;}
+.prio-l{background:rgba(122,184,74,.15);color:var(--accent);}
+
+/* SETTINGS */
+.settings-section{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:22px;}
+.settings-title{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.settings-desc{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.5;}
+.themes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.theme-card{border:2px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.theme-card:hover{transform:translateY(-2px);}
+.theme-card.selected{border-color:var(--accent);}
+.theme-preview{height:70px;display:flex;overflow:hidden;}
+.t-side{width:36%;padding:8px 6px;display:flex;flex-direction:column;gap:3px;}
+.t-feed{flex:1;padding:6px;display:flex;flex-direction:column;gap:4px;}
+.t-dot{height:5px;border-radius:3px;}
+.t-card{height:18px;border-radius:6px;border-width:1px;border-style:solid;}
+.theme-name{font-size:12px;font-weight:600;padding:7px 10px 3px;}
+.theme-desc{font-size:10px;padding:0 10px 8px;}
+.theme-check{display:none;}
+.theme-card.selected .theme-check{display:flex;width:18px;height:18px;border-radius:50%;align-items:center;justify-content:center;font-size:10px;position:absolute;top:6px;right:6px;}
+.theme-card{position:relative;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;padding-bottom:0;}
+.settings-label{font-size:14px;font-weight:500;color:var(--text);}
+.settings-sublabel{font-size:12px;color:var(--muted);margin-top:2px;}
+.toggle{width:42px;height:23px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--accent);border-color:var(--accent);}
+.toggle-thumb{width:17px;height:17px;border-radius:50%;background:var(--bg2);position:absolute;top:2px;left:2px;transition:left .2s;}
+.toggle.on .toggle-thumb{left:21px;background:var(--bg);}
+
+/* PROFILE HERO */
+.profile-hero{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:24px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;}
+.profile-genres{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.profile-genre{padding:4px 12px;border-radius:16px;font-size:12px;font-weight:500;background:var(--bg3);color:var(--accent);border:1px solid var(--border);}
+
+/* RIGHT PANEL */
+.right-panel{background:var(--bg2);border-left:1px solid var(--border);padding:20px 16px;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.panel-title{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.rp-profile{display:flex;flex-direction:column;align-items:center;gap:7px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.rp-name{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--text);}
+.rp-bio{font-size:11px;color:var(--muted);text-align:center;line-height:1.5;}
+.rp-tags{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;}
+.rp-tag{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;background:var(--bg3);color:var(--accent);border:1px solid var(--border);}
+.rp-stats{display:flex;width:100%;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:4px;}
+.rp-stat{flex:1;padding:7px 4px;text-align:center;border-right:1px solid var(--border);}
+.rp-stat:last-child{border-right:none;}
+.rp-stat-val{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--accent2);}
+.rp-stat-lbl{font-size:9px;color:var(--dim);}
+.top5{display:flex;flex-direction:column;gap:8px;}
+.top5-item{display:flex;align-items:center;gap:8px;}
+.top5-num{font-size:10px;color:var(--dim);width:12px;font-weight:600;}
+.top5-cover{width:34px;height:34px;border-radius:8px;object-fit:cover;background:var(--bg3);flex-shrink:0;border:1px solid var(--border);}
+.top5-cover.placeholder{display:flex;align-items:center;justify-content:center;}
+.top5-title{font-family:var(--serif);font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.top5-artist{font-size:10px;color:var(--muted);}
+.suggest-list{display:flex;flex-direction:column;gap:7px;}
+.suggest-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;}
+.suggest-item:hover{background:var(--bg3);border-color:var(--accent);}
+.suggest-name{font-size:12px;font-weight:600;color:var(--text);}
+.suggest-meta{font-size:10px;color:var(--muted);}
+.follow-btn{padding:4px 10px;border-radius:10px;border:1px solid var(--border);color:var(--muted);font-size:10px;cursor:pointer;background:transparent;font-family:var(--sans);transition:all .15s;margin-left:auto;flex-shrink:0;}
+.follow-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* VINYL PLACEHOLDER */
+.vinyl-ph{border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.v-dot{border-radius:50%;background:var(--accent);}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:900px){.app{grid-template-columns:1fr;}.sidebar,.right-panel{display:none;}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-mark"><div class="logo-vinyl"><div class="logo-hole"></div></div></div>
+    <div class="logo-text">Groovely</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="goTo('feed',this)"><span class="nav-icon">⊞</span> Feed</div>
+    <div class="nav-item" onclick="goTo('discover',this)"><span class="nav-icon">◎</span> Découvrir</div>
+    <div class="nav-section">Ma musique</div>
+    <div class="nav-item" onclick="goTo('collection',this)"><span class="nav-icon">▣</span> Ma collection</div>
+    <div class="nav-item" onclick="goTo('wishlist',this)"><span class="nav-icon">♡</span> Wishlist</div>
+    <div class="nav-item" onclick="goTo('lists',this)"><span class="nav-icon">≡</span> Mes listes</div>
+    <div class="nav-section">Outils</div>
+    <div class="nav-item" onclick="goTo('suggestions',this)"><span class="nav-icon">✦</span> Suggestions IA</div>
+    <div class="nav-item" onclick="goTo('valeur',this)"><span class="nav-icon">◈</span> Valeur collection</div>
+    <div class="nav-section">Compte</div>
+    <div class="nav-item" onclick="goTo('profile',this)"><span class="nav-icon">👤</span> Mon profil</div>
+    <div class="nav-item" onclick="goTo('settings',this)"><span class="nav-icon">⚙</span> Paramètres</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="av av-sm av-g">MD</div>
+    <div><div class="footer-name">mathisduchemin</div><div class="footer-sub">247 vinyles</div></div>
+    <button class="new-btn">+ Avis</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SEARCH BAR (toujours visible) -->
+  <div class="search-bar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input class="search-input" id="search-input" placeholder="Rechercher un artiste, un album…" autocomplete="off" oninput="onSearch(this.value)">
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <button class="new-btn" style="margin-left:0">+ Ajouter</button>
+  </div>
+
+  <!-- ══ FEED ══ -->
+  <div id="page-feed" class="page active">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-title">Mon feed</div>
+        <div class="tabs">
+          <div class="tab active" onclick="activateTab(this)">Abonnements</div>
+          <div class="tab" onclick="activateTab(this)">Tendances</div>
+          <div class="tab" onclick="activateTab(this)">Récents</div>
+        </div>
+      </div>
+
+      <!-- SECTION : Avis récents -->
+      <div>
+        <div class="section-header"><div class="section-title">Avis récents</div></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+          <div class="feed-card">
+            <div class="feed-card-header">
+              <div class="av av-sm av-g">TC</div>
+              <div class="feed-card-user"><div class="feed-card-username">thomasc_vinyl</div><div class="feed-card-action">a ajouté un avis</div></div>
+              <div class="feed-card-time">23 min</div>
+            </div>
+            <div class="feed-album-row">
+              <div id="cov-89a38a89-0" data-mbid="89a38a89-2a63-4a83-b9af-1da1b0c39ef9" data-cover-id="cov-89a38a89-0" data-cover-size="250" style="overflow:hidden;" style="width:64px;height:64px;border-radius:12px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:39px;height:39px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:11px;height:11px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:5px;height:5px;border-radius:50%;background:#c94b4b;"></div>
+    </div>
+  </div>
+</div>
+              <div style="flex:1">
+                <div class="feed-album-title">Madvillainy</div>
+                <div class="feed-album-artist">Madvillain · 2004</div>
+                <div class="stars"><div class="star f"></div><div class="star f"></div><div class="star f"></div><div class="star f"></div><div class="star f"></div></div>
+              </div>
+              <div class="genre-pill">Hip-Hop</div>
+            </div>
+            <div class="review-text">Un chef-d'œuvre absolu. La production de <em>Madlib</em> et les flows de <em>MF DOOM</em> s'entremêlent parfaitement. Mon pressing original est une pièce de collection inestimable.</div>
+            <div class="card-footer"><div class="action liked">♥ 142</div><div class="action">◎ 38</div><button class="pill-btn">+ Wishlist</button></div>
+          </div>
+
+          <div class="feed-card">
+            <div class="feed-card-header">
+              <div class="av av-sm av-a">SL</div>
+              <div class="feed-card-user"><div class="feed-card-username">sophie_records</div><div class="feed-card-action">a ajouté un avis</div></div>
+              <div class="feed-card-time">1h</div>
+            </div>
+            <div class="feed-album-row">
+              <div id="cov-9c0f1c26-16" data-mbid="9c0f1c26-d8bf-4843-9498-64b47bc52b9f" data-cover-id="cov-9c0f1c26-16" data-cover-size="250" style="overflow:hidden;" style="width:64px;height:64px;border-radius:12px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:39px;height:39px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:11px;height:11px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:5px;height:5px;border-radius:50%;background:#9b7aee;"></div>
+    </div>
+  </div>
+</div>
+              <div style="flex:1">
+                <div class="feed-album-title">Lonerism</div>
+                <div class="feed-album-artist">Tame Impala · 2012</div>
+                <div class="stars"><div class="star f"></div><div class="star f"></div><div class="star f"></div><div class="star f"></div><div class="star e"></div></div>
+              </div>
+              <div class="genre-pill">Psych Rock</div>
+            </div>
+            <div class="review-text">Pressing australien original — la différence sonore est incroyable. <em>Kevin Parker</em> a créé quelque chose d'intemporel.</div>
+            <div class="card-footer"><div class="action">♡ 89</div><div class="action">◎ 21</div><button class="pill-btn">+ Wishlist</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION : Nouvelles dans ta communauté -->
+      <div>
+        <div class="section-header"><div class="section-title">Nouvelles sorties appréciées</div><div class="see-all">Voir tout</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-4a538988-7" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-7" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4a8acc;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Kind of Blue</div><div class="album-artist-sm">Miles Davis</div><div class="album-year-sm">1959</div></div></div>
+          <div class="album-card-sm"><div id="cov-3c1d2b36-22" data-mbid="3c1d2b36-2a93-4e50-9d5c-ab60d851b45b" data-cover-id="cov-3c1d2b36-22" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#d4a843;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Donuts</div><div class="album-artist-sm">J Dilla</div><div class="album-year-sm">2006</div></div></div>
+          <div class="album-card-sm"><div id="cov-b8f91370-28" data-mbid="b8f91370-fd26-4f8d-bc22-d18d33d6d875" data-cover-id="cov-b8f91370-28" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4acaaa;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Blue Train</div><div class="album-artist-sm">John Coltrane</div><div class="album-year-sm">1957</div></div></div>
+          <div class="album-card-sm"><div id="cov-a3bf7846-38" data-mbid="a3bf7846-4bd3-4e9e-9cd6-c5a7b6c3e96b" data-cover-id="cov-a3bf7846-38" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#7ab84a;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Drunk</div><div class="album-artist-sm">Thundercat</div><div class="album-year-sm">2017</div></div></div>
+          <div class="album-card-sm"><div id="cov-2f5f7fb4-34" data-mbid="2f5f7fb4-1b2a-4f5e-b39c-3c32db1c4bc4" data-cover-id="cov-2f5f7fb4-34" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#e8724a;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">MM..FOOD</div><div class="album-artist-sm">MF DOOM</div><div class="album-year-sm">2004</div></div></div>
+        </div>
+      </div>
+
+      <!-- SECTION : Listes populaires -->
+      <div>
+        <div class="section-header"><div class="section-title">Listes populaires</div><div class="see-all">Voir tout</div></div>
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <div class="av av-sm av-r">JR</div>
+            <div class="feed-card-user"><div class="feed-card-username">jazzroots_paris</div><div class="feed-card-action">a créé une liste</div></div>
+            <div class="feed-card-time">3h</div>
+          </div>
+          <div style="font-family:var(--serif);font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Les 10 pressings Blue Note indispensables</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px">Ma sélection des pressings originaux des années 60 — des objets sonores et visuels uniques.</div>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <div style="flex:1;height:56px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:var(--bg3);background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:33px;height:33px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 45deg,#0a0a0a 90deg,#1a1a1a 135deg,#0a0a0a 180deg,#1a1a1a 225deg,#0a0a0a 270deg,#1a1a1a 315deg);display:flex;align-items:center;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#4a8acc;"></div></div></div>
+            <div style="flex:1;height:56px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:var(--bg3);background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:33px;height:33px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 45deg,#0a0a0a 90deg,#1a1a1a 135deg,#0a0a0a 180deg,#1a1a1a 225deg,#0a0a0a 270deg,#1a1a1a 315deg);display:flex;align-items:center;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#4acaaa;"></div></div></div>
+            <div style="flex:1;height:56px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:var(--bg3);background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:33px;height:33px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 45deg,#0a0a0a 90deg,#1a1a1a 135deg,#0a0a0a 180deg,#1a1a1a 225deg,#0a0a0a 270deg,#1a1a1a 315deg);display:flex;align-items:center;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#d4a843;"></div></div></div>
+            <div style="width:56px;height:56px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);font-weight:600">+7</div>
+          </div>
+          <div class="card-footer"><div class="action">♡ 204</div><div class="action">◎ 56</div><button class="pill-btn">Voir la liste →</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ COLLECTION ══ -->
+  <div id="page-collection" class="page">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-title">Ma collection</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="font-family:var(--serif);font-size:15px;color:var(--accent)">247 vinyles</div>
+          <button class="new-btn" style="margin:0">+ Ajouter</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="pill-btn active" style="border-color:var(--accent);color:var(--accent)">Tous</button>
+        <button class="pill-btn">Rock</button><button class="pill-btn">Jazz</button><button class="pill-btn">Hip-Hop</button><button class="pill-btn">Électro</button><button class="pill-btn">Soul</button><button class="pill-btn">Classique</button>
+      </div>
+
+      <!-- PAR GENRE : Hip-Hop -->
+      <div>
+        <div class="section-header"><div class="section-title">Hip-Hop</div><div class="see-all">Voir tout (42)</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-89a38a89-1" data-mbid="89a38a89-2a63-4a83-b9af-1da1b0c39ef9" data-cover-id="cov-89a38a89-1" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#c94b4b;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Madvillainy</div><div class="album-artist-sm">Madvillain</div><div class="album-year-sm">2004 · NM</div></div></div>
+          <div class="album-card-sm"><div id="cov-3c1d2b36-23" data-mbid="3c1d2b36-2a93-4e50-9d5c-ab60d851b45b" data-cover-id="cov-3c1d2b36-23" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#d4a843;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Donuts</div><div class="album-artist-sm">J Dilla</div><div class="album-year-sm">2006 · NM</div></div></div>
+          <div class="album-card-sm"><div id="cov-2f5f7fb4-35" data-mbid="2f5f7fb4-1b2a-4f5e-b39c-3c32db1c4bc4" data-cover-id="cov-2f5f7fb4-35" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#e8724a;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">MM..FOOD</div><div class="album-artist-sm">MF DOOM</div><div class="album-year-sm">2004 · VG+</div></div></div>
+          <div class="album-card-sm"><div id="cov-a3bf7846-39" data-mbid="a3bf7846-4bd3-4e9e-9cd6-c5a7b6c3e96b" data-cover-id="cov-a3bf7846-39" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#7ab84a;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Drunk</div><div class="album-artist-sm">Thundercat</div><div class="album-year-sm">2017 · M</div></div></div>
+        </div>
+      </div>
+
+      <!-- PAR GENRE : Jazz -->
+      <div>
+        <div class="section-header"><div class="section-title">Jazz</div><div class="see-all">Voir tout (38)</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-4a538988-8" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-8" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4a8acc;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Kind of Blue</div><div class="album-artist-sm">Miles Davis</div><div class="album-year-sm">1959 · VG+</div></div></div>
+          <div class="album-card-sm"><div id="cov-b8f91370-29" data-mbid="b8f91370-fd26-4f8d-bc22-d18d33d6d875" data-cover-id="cov-b8f91370-29" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4acaaa;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Blue Train</div><div class="album-artist-sm">John Coltrane</div><div class="album-year-sm">1957 · VG</div></div></div>
+        </div>
+      </div>
+
+      <!-- PAR GENRE : Rock -->
+      <div>
+        <div class="section-header"><div class="section-title">Rock & Psychédélique</div><div class="see-all">Voir tout (67)</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-9c0f1c26-17" data-mbid="9c0f1c26-d8bf-4843-9498-64b47bc52b9f" data-cover-id="cov-9c0f1c26-17" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#9b7aee;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Lonerism</div><div class="album-artist-sm">Tame Impala</div><div class="album-year-sm">2012 · M</div></div></div>
+          <div class="album-card-sm"><div style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#c0a040;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">The Dark Side</div><div class="album-artist-sm">Pink Floyd</div><div class="album-year-sm">1973 · NM</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WISHLIST ══ -->
+  <div id="page-wishlist" class="page">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-title">Wishlist</div>
+        <button class="new-btn" style="margin:0">♥ Ajouter</button>
+      </div>
+      <div class="stats-cards">
+        <div class="stat-card"><div class="stat-card-val">18</div><div class="stat-card-lbl">Souhaits</div></div>
+        <div class="stat-card"><div class="stat-card-val">5</div><div class="stat-card-lbl">Haute priorité</div></div>
+        <div class="stat-card"><div class="stat-card-val">1 240 €</div><div class="stat-card-lbl">Valeur marché</div></div>
+        <div class="stat-card"><div class="stat-card-val">680 €</div><div class="stat-card-lbl">Budget max</div></div>
+      </div>
+
+      <!-- Haute priorité horizontal -->
+      <div>
+        <div class="section-header"><div class="section-title">🔴 Haute priorité</div><div class="see-all">Voir tout (5)</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#e05050;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Selected Ambient</div><div class="album-artist-sm">Aphex Twin</div><div class="album-year-sm">180 €</div></div></div>
+          <div class="album-card-sm"><div style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#8060c0;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Dummy</div><div class="album-artist-sm">Portishead</div><div class="album-year-sm">210 €</div></div></div>
+        </div>
+      </div>
+
+      <!-- Table détaillée -->
+      <div>
+        <div class="section-header"><div class="section-title">Vue détaillée</div></div>
+        <div class="wish-table">
+          <div class="wish-table-head"><span>Vinyle</span><span>Priorité</span><span>Prix marché</span><span>Budget max</span><span>Actions</span></div>
+          <div class="wish-row"><div><div class="wish-artist">Aphex Twin</div><div class="wish-title">Selected Ambient Works</div></div><div><span class="prio prio-h">🔴 Haute</span></div><div style="color:var(--accent)">180 €</div><div style="color:var(--muted)">200 €</div><div style="display:flex;gap:5px"><button class="follow-btn">↻</button><button class="follow-btn">✓</button></div></div>
+          <div class="wish-row"><div><div class="wish-artist">Daft Punk</div><div class="wish-title">Random Access Memories</div></div><div><span class="prio prio-m">🟡 Moyenne</span></div><div style="color:var(--accent)">95 €</div><div style="color:var(--muted)">120 €</div><div style="display:flex;gap:5px"><button class="follow-btn">↻</button><button class="follow-btn">✓</button></div></div>
+          <div class="wish-row"><div><div class="wish-artist">Portishead</div><div class="wish-title">Dummy</div></div><div><span class="prio prio-h">🔴 Haute</span></div><div style="color:var(--accent)">210 €</div><div style="color:var(--muted)">180 €</div><div style="display:flex;gap:5px"><button class="follow-btn">↻</button><button class="follow-btn">✓</button></div></div>
+          <div class="wish-row"><div><div class="wish-artist">Boards of Canada</div><div class="wish-title">Music Has the Right</div></div><div><span class="prio prio-l">🟢 Basse</span></div><div style="color:var(--accent)">320 €</div><div style="color:var(--muted)">—</div><div style="display:flex;gap:5px"><button class="follow-btn">↻</button><button class="follow-btn">✓</button></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DÉCOUVRIR ══ -->
+  <div id="page-discover" class="page">
+    <div class="page-inner">
+      <div class="page-title">Découvrir</div>
+
+      <div>
+        <div class="section-header"><div class="section-title">🎵 Dans ton style</div><div class="see-all">Voir tout</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-2f5f7fb4-36" data-mbid="2f5f7fb4-1b2a-4f5e-b39c-3c32db1c4bc4" data-cover-id="cov-2f5f7fb4-36" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#e8724a;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div style="margin-bottom:3px"><span class="album-badge badge-g">Similaire</span></div><div class="album-title-sm">MM..FOOD</div><div class="album-artist-sm">MF DOOM</div></div></div>
+          <div class="album-card-sm"><div id="cov-a3bf7846-40" data-mbid="a3bf7846-4bd3-4e9e-9cd6-c5a7b6c3e96b" data-cover-id="cov-a3bf7846-40" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#7ab84a;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div style="margin-bottom:3px"><span class="album-badge badge-g">Similaire</span></div><div class="album-title-sm">Drunk</div><div class="album-artist-sm">Thundercat</div></div></div>
+          <div class="album-card-sm"><div id="cov-4a538988-9" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-9" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4a8acc;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div style="margin-bottom:3px"><span class="album-badge badge-g">Similaire</span></div><div class="album-title-sm">Kind of Blue</div><div class="album-artist-sm">Miles Davis</div></div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-header"><div class="section-title">🔭 À découvrir</div><div class="see-all">Voir tout</div></div>
+        <div class="album-grid">
+          <div class="album-card-md"><div id="cov-b8f91370-30" data-mbid="b8f91370-fd26-4f8d-bc22-d18d33d6d875" data-cover-id="cov-b8f91370-30" data-cover-size="250" style="overflow:hidden;" style="width:100%;aspect-ratio:1;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+  <div style="width:62%;height:62%;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:18%;height:18%;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:8%;height:8%;border-radius:50%;background:#4acaaa;"></div>
+    </div>
+  </div>
+</div><div class="album-info-md"><span class="album-badge badge-a">À découvrir</span><div class="album-title-md">Blue Train</div><div class="album-artist-md">John Coltrane · 1957</div></div></div>
+          <div class="album-card-md"><div id="cov-3c1d2b36-24" data-mbid="3c1d2b36-2a93-4e50-9d5c-ab60d851b45b" data-cover-id="cov-3c1d2b36-24" data-cover-size="250" style="overflow:hidden;" style="width:100%;aspect-ratio:1;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+  <div style="width:62%;height:62%;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:18%;height:18%;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:8%;height:8%;border-radius:50%;background:#d4a843;"></div>
+    </div>
+  </div>
+</div><div class="album-info-md"><span class="album-badge badge-a">À découvrir</span><div class="album-title-md">Donuts</div><div class="album-artist-md">J Dilla · 2006</div></div></div>
+          <div class="album-card-md"><div id="cov-9c0f1c26-18" data-mbid="9c0f1c26-d8bf-4843-9498-64b47bc52b9f" data-cover-id="cov-9c0f1c26-18" data-cover-size="250" style="overflow:hidden;" style="width:100%;aspect-ratio:1;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+  <div style="width:62%;height:62%;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:18%;height:18%;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:8%;height:8%;border-radius:50%;background:#9b7aee;"></div>
+    </div>
+  </div>
+</div><div class="album-info-md"><span class="album-badge badge-a">À découvrir</span><div class="album-title-md">Lonerism</div><div class="album-artist-md">Tame Impala · 2012</div></div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-header"><div class="section-title">💎 Raretés & Pressings</div><div class="see-all">Voir tout</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-89a38a89-2" data-mbid="89a38a89-2a63-4a83-b9af-1da1b0c39ef9" data-cover-id="cov-89a38a89-2" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#c94b4b;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div style="margin-bottom:3px"><span class="album-badge badge-r">Rare</span></div><div class="album-title-sm">Madvillainy</div><div class="album-artist-sm">Madvillain</div></div></div>
+          <div class="album-card-sm"><div id="cov-4a538988-10" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-10" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4a8acc;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div style="margin-bottom:3px"><span class="album-badge badge-r">Rare</span></div><div class="album-title-sm">Kind of Blue</div><div class="album-artist-sm">Miles Davis</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LISTES ══ -->
+  <div id="page-lists" class="page">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-title">Mes listes</div>
+        <button class="new-btn" style="margin:0">+ Nouvelle liste</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
+        <div class="feed-card" style="cursor:pointer">
+          <div style="font-family:var(--serif);font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Mes essentiels Hip-Hop</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">12 vinyles · Publique</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <div style="flex:1;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:26px;height:26px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 45deg,#0a0a0a 90deg,#1a1a1a 135deg,#0a0a0a 180deg,#1a1a1a 225deg,#0a0a0a 270deg,#1a1a1a 315deg);display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:#c94b4b;"></div></div></div>
+            <div style="flex:1;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:26px;height:26px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 45deg,#0a0a0a 90deg,#1a1a1a 135deg,#0a0a0a 180deg,#1a1a1a 225deg,#0a0a0a 270deg,#1a1a1a 315deg);display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:#d4a843;"></div></div></div>
+            <div style="width:44px;height:44px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);font-weight:600">+9</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">♡ 89 · ◎ 24</div>
+        </div>
+        <div class="feed-card" style="cursor:pointer">
+          <div style="font-family:var(--serif);font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Jazz des années 60</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">8 vinyles · Publique</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <div style="flex:1;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:26px;height:26px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 45deg,#0a0a0a 90deg,#1a1a1a 135deg,#0a0a0a 180deg,#1a1a1a 225deg,#0a0a0a 270deg,#1a1a1a 315deg);display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:#4a8acc;"></div></div></div>
+            <div style="flex:1;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:26px;height:26px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 45deg,#0a0a0a 90deg,#1a1a1a 135deg,#0a0a0a 180deg,#1a1a1a 225deg,#0a0a0a 270deg,#1a1a1a 315deg);display:flex;align-items:center;justify-content:center;"><div style="width:6px;height:6px;border-radius:50%;background:#4acaaa;"></div></div></div>
+            <div style="width:44px;height:44px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);font-weight:600">+5</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">♡ 142 · ◎ 38</div>
+        </div>
+        <div class="feed-card" style="cursor:pointer;border-style:dashed;display:flex;align-items:center;justify-content:center;min-height:120px;flex-direction:column;gap:6px">
+          <div style="font-size:24px;color:var(--muted)">+</div>
+          <div style="font-size:13px;color:var(--muted)">Créer une liste</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUGGESTIONS IA ══ -->
+  <div id="page-suggestions" class="page">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="page-title">Suggestions IA</div>
+        <button class="pill-btn">✨ Régénérer</button>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px">
+        <div style="font-size:18px">✦</div>
+        <div><div style="font-size:13px;font-weight:600;color:var(--text)">Générées le 24/03/2026</div><div style="font-size:12px;color:var(--muted)">Basées sur 247 vinyles et 18 souhaits</div></div>
+      </div>
+      <div>
+        <div class="section-header"><div class="section-title">🎵 Dans ton style</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-2f5f7fb4-37" data-mbid="2f5f7fb4-1b2a-4f5e-b39c-3c32db1c4bc4" data-cover-id="cov-2f5f7fb4-37" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#e8724a;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">MM..FOOD</div><div class="album-artist-sm">MF DOOM</div><button class="sr-add" style="margin-top:5px;width:100%">+ Wishlist</button></div></div>
+          <div class="album-card-sm"><div id="cov-a3bf7846-41" data-mbid="a3bf7846-4bd3-4e9e-9cd6-c5a7b6c3e96b" data-cover-id="cov-a3bf7846-41" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#7ab84a;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Drunk</div><div class="album-artist-sm">Thundercat</div><button class="sr-add" style="margin-top:5px;width:100%">+ Wishlist</button></div></div>
+          <div class="album-card-sm"><div id="cov-b8f91370-31" data-mbid="b8f91370-fd26-4f8d-bc22-d18d33d6d875" data-cover-id="cov-b8f91370-31" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4acaaa;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Blue Train</div><div class="album-artist-sm">John Coltrane</div><button class="sr-add" style="margin-top:5px;width:100%">+ Wishlist</button></div></div>
+          <div class="album-card-sm"><div id="cov-3c1d2b36-25" data-mbid="3c1d2b36-2a93-4e50-9d5c-ab60d851b45b" data-cover-id="cov-3c1d2b36-25" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#d4a843;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Donuts</div><div class="album-artist-sm">J Dilla</div><button class="sr-add" style="margin-top:5px;width:100%">+ Wishlist</button></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-header"><div class="section-title">🔭 À découvrir</div></div>
+        <div class="album-grid">
+          <div class="album-card-md"><div id="cov-9c0f1c26-19" data-mbid="9c0f1c26-d8bf-4843-9498-64b47bc52b9f" data-cover-id="cov-9c0f1c26-19" data-cover-size="250" style="overflow:hidden;" style="width:100%;aspect-ratio:1;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+  <div style="width:62%;height:62%;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:18%;height:18%;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:8%;height:8%;border-radius:50%;background:#9b7aee;"></div>
+    </div>
+  </div>
+</div><div class="album-info-md"><div class="album-title-md">Lonerism</div><div class="album-artist-md">Tame Impala</div></div></div>
+          <div class="album-card-md"><div id="cov-89a38a89-3" data-mbid="89a38a89-2a63-4a83-b9af-1da1b0c39ef9" data-cover-id="cov-89a38a89-3" data-cover-size="250" style="overflow:hidden;" style="width:100%;aspect-ratio:1;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+  <div style="width:62%;height:62%;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:18%;height:18%;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:8%;height:8%;border-radius:50%;background:#c94b4b;"></div>
+    </div>
+  </div>
+</div><div class="album-info-md"><div class="album-title-md">Madvillainy</div><div class="album-artist-md">Madvillain</div></div></div>
+          <div class="album-card-md"><div id="cov-4a538988-11" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-11" data-cover-size="250" style="overflow:hidden;" style="width:100%;aspect-ratio:1;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+  <div style="width:62%;height:62%;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:18%;height:18%;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:8%;height:8%;border-radius:50%;background:#4a8acc;"></div>
+    </div>
+  </div>
+</div><div class="album-info-md"><div class="album-title-md">Kind of Blue</div><div class="album-artist-md">Miles Davis</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ VALEUR ══ -->
+  <div id="page-valeur" class="page">
+    <div class="page-inner">
+      <div class="page-title">Valeur collection</div>
+      <div class="stats-cards">
+        <div class="stat-card"><div class="stat-card-val">4 820 €</div><div class="stat-card-lbl">Valeur médiane</div></div>
+        <div class="stat-card"><div class="stat-card-val">2 340 €</div><div class="stat-card-lbl">Total investi</div></div>
+        <div class="stat-card" style="border-top-color:#4caf50"><div class="stat-card-val" style="color:#4caf50">+2 480 €</div><div class="stat-card-lbl">Plus-value</div></div>
+        <div class="stat-card"><div class="stat-card-val">247</div><div class="stat-card-lbl">Vinyles</div></div>
+      </div>
+
+      <div>
+        <div class="section-header"><div class="section-title">Les plus précieux</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-4a538988-12" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-12" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4a8acc;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Kind of Blue</div><div class="album-artist-sm">Miles Davis</div><div style="font-size:12px;color:var(--accent);font-weight:600;margin-top:3px">420 €</div></div></div>
+          <div class="album-card-sm"><div id="cov-89a38a89-4" data-mbid="89a38a89-2a63-4a83-b9af-1da1b0c39ef9" data-cover-id="cov-89a38a89-4" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#c94b4b;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Madvillainy</div><div class="album-artist-sm">Madvillain</div><div style="font-size:12px;color:var(--accent);font-weight:600;margin-top:3px">240 €</div></div></div>
+          <div class="album-card-sm"><div id="cov-4a538988-13" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-13" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4acaaa;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Blue Train</div><div class="album-artist-sm">John Coltrane</div><div style="font-size:12px;color:var(--accent);font-weight:600;margin-top:3px">380 €</div></div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-header"><div class="section-title">Tableau complet</div></div>
+        <div class="wish-table">
+          <div class="wish-table-head"><span>Vinyle</span><span>Année</span><span>État</span><span>Valeur min</span><span>Valeur med</span></div>
+          <div class="wish-row"><div><div class="wish-artist">Miles Davis</div><div class="wish-title">Kind of Blue</div></div><div style="color:var(--muted)">1959</div><div><span class="prio prio-m">VG+</span></div><div style="color:var(--accent)">280 €</div><div style="color:var(--accent)">420 €</div></div>
+          <div class="wish-row"><div><div class="wish-artist">Madvillain</div><div class="wish-title">Madvillainy</div></div><div style="color:var(--muted)">2004</div><div><span class="prio prio-h">NM</span></div><div style="color:var(--accent)">180 €</div><div style="color:var(--accent)">240 €</div></div>
+          <div class="wish-row"><div><div class="wish-artist">Pink Floyd</div><div class="wish-title">The Dark Side</div></div><div style="color:var(--muted)">1973</div><div><span class="prio prio-l">NM</span></div><div style="color:var(--accent)">320 €</div><div style="color:var(--accent)">480 €</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROFIL ══ -->
+  <div id="page-profile" class="page">
+    <div class="page-inner">
+      <div class="profile-hero">
+        <div class="av av-lg av-g">MD</div>
+        <div style="flex:1">
+          <div style="font-family:var(--serif);font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px">mathisduchemin</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px">Collectionneur passionné depuis 2018.</div>
+          <div class="profile-genres"><span class="profile-genre">Hip-Hop</span><span class="profile-genre">Jazz</span><span class="profile-genre">Psych Rock</span></div>
+        </div>
+        <button class="pill-btn">Modifier le profil</button>
+      </div>
+      <div class="stats-cards">
+        <div class="stat-card"><div class="stat-card-val">247</div><div class="stat-card-lbl">Vinyles</div></div>
+        <div class="stat-card"><div class="stat-card-val">83</div><div class="stat-card-lbl">Avis</div></div>
+        <div class="stat-card"><div class="stat-card-val">1.2k</div><div class="stat-card-lbl">Abonnés</div></div>
+        <div class="stat-card"><div class="stat-card-val">312</div><div class="stat-card-lbl">Abonnements</div></div>
+      </div>
+      <div>
+        <div class="section-header"><div class="section-title">Mon top 5</div></div>
+        <div class="h-scroll">
+          <div class="album-card-sm"><div id="cov-89a38a89-5" data-mbid="89a38a89-2a63-4a83-b9af-1da1b0c39ef9" data-cover-id="cov-89a38a89-5" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#c94b4b;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Madvillainy</div><div class="album-artist-sm">Madvillain</div></div></div>
+          <div class="album-card-sm"><div id="cov-4a538988-14" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-14" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4a8acc;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Kind of Blue</div><div class="album-artist-sm">Miles Davis</div></div></div>
+          <div class="album-card-sm"><div id="cov-9c0f1c26-20" data-mbid="9c0f1c26-d8bf-4843-9498-64b47bc52b9f" data-cover-id="cov-9c0f1c26-20" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#9b7aee;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Lonerism</div><div class="album-artist-sm">Tame Impala</div></div></div>
+          <div class="album-card-sm"><div id="cov-3c1d2b36-26" data-mbid="3c1d2b36-2a93-4e50-9d5c-ab60d851b45b" data-cover-id="cov-3c1d2b36-26" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#d4a843;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Donuts</div><div class="album-artist-sm">J Dilla</div></div></div>
+          <div class="album-card-sm"><div id="cov-b8f91370-32" data-mbid="b8f91370-fd26-4f8d-bc22-d18d33d6d875" data-cover-id="cov-b8f91370-32" data-cover-size="250" style="overflow:hidden;" style="width:140px;height:140px;border-radius:14px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:86px;height:86px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:25px;height:25px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:11px;height:11px;border-radius:50%;background:#4acaaa;"></div>
+    </div>
+  </div>
+</div><div class="album-info-sm"><div class="album-title-sm">Blue Train</div><div class="album-artist-sm">John Coltrane</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PARAMÈTRES ══ -->
+  <div id="page-settings" class="page">
+    <div class="page-inner" style="max-width:780px">
+      <div class="page-title">Paramètres</div>
+
+      <div class="settings-section">
+        <div class="settings-title">Ambiance & couleurs</div>
+        <div class="settings-desc">Choisis le thème qui te ressemble. Le changement est instantané.</div>
+        <div class="themes-grid">
+          <div class="theme-card selected" data-theme="" onclick="applyTheme('',this)">
+            <div class="theme-preview"><div class="t-side" style="background:#1a2418;border-right:1px solid #2e3e2c"><div style="font-size:7px;font-style:italic;color:#e8f0e0;margin-bottom:5px">Groovely</div><div class="t-dot active" style="background:#7ab84a;width:100%;margin-bottom:2px"></div><div class="t-dot" style="background:#4a6040;width:70%;margin-bottom:2px"></div><div class="t-dot" style="background:#4a6040;width:70%"></div></div><div class="t-feed" style="background:#121a10"><div class="t-card" style="background:#1a2418;border-color:#2e3e2c"></div><div class="t-card" style="background:#1a2418;border-color:#2e3e2c"></div></div></div>
+            <div class="theme-check" style="background:#7ab84a;color:#0f1a0d">✓</div>
+            <div class="theme-name" style="color:#e8f0e0;background:#1a2418">Forêt 🌿</div>
+            <div class="theme-desc" style="color:#7a9068;background:#1a2418">Vert profond, naturel</div>
+          </div>
+          <div class="theme-card" data-theme="bordeaux" onclick="applyTheme('bordeaux',this)">
+            <div class="theme-preview"><div class="t-side" style="background:#211414;border-right:1px solid #4a2a2a"><div style="font-size:7px;font-style:italic;color:#f5e6d0;margin-bottom:5px">Groovely</div><div class="t-dot" style="background:#e8724a;width:100%;margin-bottom:2px"></div><div class="t-dot" style="background:#7a5040;width:70%;margin-bottom:2px"></div><div class="t-dot" style="background:#7a5040;width:70%"></div></div><div class="t-feed" style="background:#170e0e"><div class="t-card" style="background:#211414;border-color:#4a2a2a"></div><div class="t-card" style="background:#211414;border-color:#4a2a2a"></div></div></div>
+            <div class="theme-check" style="background:#e8724a;color:#fff">✓</div>
+            <div class="theme-name" style="color:#f5e6d0;background:#211414">Bordeaux 🍷</div>
+            <div class="theme-desc" style="color:#a08070;background:#211414">Rouge chaleureux</div>
+          </div>
+          <div class="theme-card" data-theme="ardoise" onclick="applyTheme('ardoise',this)">
+            <div class="theme-preview"><div class="t-side" style="background:#151d2b;border-right:1px solid #2a3850"><div style="font-size:7px;font-style:italic;color:#e8eef8;margin-bottom:5px">Groovely</div><div class="t-dot" style="background:#5b8dee;width:100%;margin-bottom:2px"></div><div class="t-dot" style="background:#4a5a7a;width:70%;margin-bottom:2px"></div><div class="t-dot" style="background:#4a5a7a;width:70%"></div></div><div class="t-feed" style="background:#0f1520"><div class="t-card" style="background:#151d2b;border-color:#2a3850"></div><div class="t-card" style="background:#151d2b;border-color:#2a3850"></div></div></div>
+            <div class="theme-check" style="background:#5b8dee;color:#fff">✓</div>
+            <div class="theme-name" style="color:#e8eef8;background:#151d2b">Ardoise 🌊</div>
+            <div class="theme-desc" style="color:#6a7a9a;background:#151d2b">Bleu nuit moderne</div>
+          </div>
+          <div class="theme-card" data-theme="noir" onclick="applyTheme('noir',this)">
+            <div class="theme-preview"><div class="t-side" style="background:#111111;border-right:1px solid #2a2a2a"><div style="font-size:7px;font-style:italic;color:#f0ece0;margin-bottom:5px">Groovely</div><div class="t-dot" style="background:#e8c547;width:100%;margin-bottom:2px"></div><div class="t-dot" style="background:#4a4640;width:70%;margin-bottom:2px"></div><div class="t-dot" style="background:#4a4640;width:70%"></div></div><div class="t-feed" style="background:#0a0a0a"><div class="t-card" style="background:#111111;border-color:#2a2a2a"></div><div class="t-card" style="background:#111111;border-color:#2a2a2a"></div></div></div>
+            <div class="theme-check" style="background:#e8c547;color:#000">✓</div>
+            <div class="theme-name" style="color:#f0ece0;background:#111111">Noir & Or ✨</div>
+            <div class="theme-desc" style="color:#7a7668;background:#111111">Élégant, classique</div>
+          </div>
+          <div class="theme-card" data-theme="violet" onclick="applyTheme('violet',this)">
+            <div class="theme-preview"><div class="t-side" style="background:#1a1525;border-right:1px solid #3a3050"><div style="font-size:7px;font-style:italic;color:#ece8f8;margin-bottom:5px">Groovely</div><div class="t-dot" style="background:#9b7aee;width:100%;margin-bottom:2px"></div><div class="t-dot" style="background:#5a4a80;width:70%;margin-bottom:2px"></div><div class="t-dot" style="background:#5a4a80;width:70%"></div></div><div class="t-feed" style="background:#110f1a"><div class="t-card" style="background:#1a1525;border-color:#3a3050"></div><div class="t-card" style="background:#1a1525;border-color:#3a3050"></div></div></div>
+            <div class="theme-check" style="background:#9b7aee;color:#fff">✓</div>
+            <div class="theme-name" style="color:#ece8f8;background:#1a1525">Violet 🔮</div>
+            <div class="theme-desc" style="color:#8a7aaa;background:#1a1525">Mystérieux, psyché</div>
+          </div>
+          <div class="theme-card" data-theme="creme" onclick="applyTheme('creme',this)">
+            <div class="theme-preview"><div class="t-side" style="background:#ede8dc;border-right:1px solid #ccc4b0"><div style="font-size:7px;font-style:italic;color:#2a1f14;margin-bottom:5px">Groovely</div><div class="t-dot" style="background:#8b5e3c;width:100%;margin-bottom:2px"></div><div class="t-dot" style="background:#a09080;width:70%;margin-bottom:2px"></div><div class="t-dot" style="background:#a09080;width:70%"></div></div><div class="t-feed" style="background:#f5f0e8"><div class="t-card" style="background:#ede8dc;border-color:#ccc4b0"></div><div class="t-card" style="background:#ede8dc;border-color:#ccc4b0"></div></div></div>
+            <div class="theme-check" style="background:#8b5e3c;color:#fff">✓</div>
+            <div class="theme-name" style="color:#2a1f14;background:#ede8dc">Crème ☀️</div>
+            <div class="theme-desc" style="color:#7a6050;background:#ede8dc">Vintage, chaleureux</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Compte</div>
+        <div class="settings-row"><div><div class="settings-label">Nom d'utilisateur</div><div class="settings-sublabel">mathisduchemin</div></div><button class="pill-btn">Modifier</button></div>
+        <div class="settings-row"><div><div class="settings-label">Email</div><div class="settings-sublabel"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e13501a0b1d161b1317103e1b131f1712501d1113">[email&#160;protected]</a></div></div><button class="pill-btn">Modifier</button></div>
+        <div class="settings-row"><div><div class="settings-label">Mot de passe</div><div class="settings-sublabel">Dernière modification il y a 3 mois</div></div><button class="pill-btn">Changer</button></div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Confidentialité</div>
+        <div class="settings-row"><div><div class="settings-label">Profil public</div><div class="settings-sublabel">Ta collection est visible par tous</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><div><div class="settings-label">Wishlist publique</div></div><div class="toggle" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><div><div class="settings-label">Valeur collection publique</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Notifications</div>
+        <div class="settings-row"><div><div class="settings-label">Nouveaux abonnés</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><div><div class="settings-label">Commentaires sur mes avis</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><div><div class="settings-label">Suggestions hebdomadaires IA</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+  <div class="rp-profile">
+    <div class="av av-md av-g">MD</div>
+    <div class="rp-name">mathisduchemin</div>
+    <div class="rp-bio">Collectionneur · Hip-Hop, Jazz, Psych Rock</div>
+    <div class="rp-tags"><span class="rp-tag">Hip-Hop</span><span class="rp-tag">Jazz</span><span class="rp-tag">Psych</span></div>
+    <div class="rp-stats">
+      <div class="rp-stat"><div class="rp-stat-val">247</div><div class="rp-stat-lbl">vinyles</div></div>
+      <div class="rp-stat"><div class="rp-stat-val">83</div><div class="rp-stat-lbl">avis</div></div>
+      <div class="rp-stat"><div class="rp-stat-val">1.2k</div><div class="rp-stat-lbl">abonnés</div></div>
+    </div>
+  </div>
+  <div>
+    <div class="panel-title">Mon top 5</div>
+    <div class="top5">
+      <div class="top5-item"><div class="top5-num">1</div><div id="cov-89a38a89-6" data-mbid="89a38a89-2a63-4a83-b9af-1da1b0c39ef9" data-cover-id="cov-89a38a89-6" data-cover-size="250" style="overflow:hidden;" style="width:34px;height:34px;border-radius:8px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:21px;height:21px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:6px;height:6px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:2px;height:2px;border-radius:50%;background:#c94b4b;"></div>
+    </div>
+  </div>
+</div><div style="flex:1;min-width:0"><div class="top5-title">Madvillainy</div><div class="top5-artist">Madvillain</div></div></div>
+      <div class="top5-item"><div class="top5-num">2</div><div id="cov-4a538988-15" data-mbid="4a538988-5679-4a23-8949-8b81a86a8e0d" data-cover-id="cov-4a538988-15" data-cover-size="250" style="overflow:hidden;" style="width:34px;height:34px;border-radius:8px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:21px;height:21px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:6px;height:6px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:2px;height:2px;border-radius:50%;background:#4a8acc;"></div>
+    </div>
+  </div>
+</div><div style="flex:1;min-width:0"><div class="top5-title">Kind of Blue</div><div class="top5-artist">Miles Davis</div></div></div>
+      <div class="top5-item"><div class="top5-num">3</div><div id="cov-9c0f1c26-21" data-mbid="9c0f1c26-d8bf-4843-9498-64b47bc52b9f" data-cover-id="cov-9c0f1c26-21" data-cover-size="250" style="overflow:hidden;" style="width:34px;height:34px;border-radius:8px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:21px;height:21px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:6px;height:6px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:2px;height:2px;border-radius:50%;background:#9b7aee;"></div>
+    </div>
+  </div>
+</div><div style="flex:1;min-width:0"><div class="top5-title">Lonerism</div><div class="top5-artist">Tame Impala</div></div></div>
+      <div class="top5-item"><div class="top5-num">4</div><div id="cov-3c1d2b36-27" data-mbid="3c1d2b36-2a93-4e50-9d5c-ab60d851b45b" data-cover-id="cov-3c1d2b36-27" data-cover-size="250" style="overflow:hidden;" style="width:34px;height:34px;border-radius:8px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:21px;height:21px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:6px;height:6px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:2px;height:2px;border-radius:50%;background:#d4a843;"></div>
+    </div>
+  </div>
+</div><div style="flex:1;min-width:0"><div class="top5-title">Donuts</div><div class="top5-artist">J Dilla</div></div></div>
+      <div class="top5-item"><div class="top5-num">5</div><div id="cov-b8f91370-33" data-mbid="b8f91370-fd26-4f8d-bc22-d18d33d6d875" data-cover-id="cov-b8f91370-33" data-cover-size="250" style="overflow:hidden;" style="width:34px;height:34px;border-radius:8px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);">
+  <div style="width:21px;height:21px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;">
+    <div style="width:6px;height:6px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+      <div style="width:2px;height:2px;border-radius:50%;background:#4acaaa;"></div>
+    </div>
+  </div>
+</div><div style="flex:1;min-width:0"><div class="top5-title">Blue Train</div><div class="top5-artist">John Coltrane</div></div></div>
+    </div>
+  </div>
+  <div>
+    <div class="panel-title">Profils similaires</div>
+    <div class="suggest-list">
+      <div class="suggest-item"><div class="av av-sm av-t">PL</div><div style="flex:1;min-width:0"><div class="suggest-name">pierre_lp</div><div class="suggest-meta">Jazz · Hip-Hop · 312 vinyles</div></div><button class="follow-btn">Suivre</button></div>
+      <div class="suggest-item"><div class="av av-sm av-a">AM</div><div style="flex:1;min-width:0"><div class="suggest-name">alice_music</div><div class="suggest-meta">Psych Rock · Soul · 178 vinyles</div></div><button class="follow-btn">Suivre</button></div>
+      <div class="suggest-item"><div class="av av-sm av-r">RB</div><div style="flex:1;min-width:0"><div class="suggest-name">romain_beats</div><div class="suggest-meta">Hip-Hop · Électro · 89 vinyles</div></div><button class="follow-btn">Suivre</button></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// Vinyl placeholder when cover not found
+function vinylPH(size) {
+  return `<div style="width:${size}px;height:${size}px;border-radius:${size > 50 ? '12px' : '8px'};background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">
+    <div style="width:${size*.55}px;height:${size*.55}px;border-radius:50%;background:conic-gradient(var(--bg) 0deg,var(--bg3) 40deg,var(--bg) 80deg,var(--bg3) 120deg,var(--bg) 160deg,var(--bg3) 200deg,var(--bg) 240deg,var(--bg3) 280deg,var(--bg) 320deg,var(--bg3) 360deg);display:flex;align-items:center;justify-content:center;">
+      <div style="width:${size*.14}px;height:${size*.14}px;border-radius:50%;background:var(--accent);"></div>
+    </div>
+  </div>`;
+}
+
+// Navigation
+function goTo(page, el) {
+  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) { target.classList.add('active'); target.style.display='flex'; }
+  el.classList.add('active');
+  loadPageCovers();
+}
+
+// Themes
+function applyTheme(theme, card) {
+  document.body.setAttribute('data-theme', theme);
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+// Tabs
+function activateTab(el) {
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Search mock
+// ── COLLECTION & WISHLIST DATA ────────────────────────────────
+let myCollection = JSON.parse(localStorage.getItem('g_collection') || '[]');
+let myWishlist   = JSON.parse(localStorage.getItem('g_wishlist')   || '[]');
+
+function saveCollection() { localStorage.setItem('g_collection', JSON.stringify(myCollection)); }
+function saveWishlist()   { localStorage.setItem('g_wishlist',   JSON.stringify(myWishlist)); }
+
+// ── ADD MODAL ─────────────────────────────────────────────────
+let pendingAlbum = null;
+
+function showAddModal(album) {
+  pendingAlbum = album;
+  let modal = document.getElementById('add-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'add-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    modal.innerHTML = `
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:420px;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+          <div id="modal-cover" style="width:64px;height:64px;border-radius:12px;background:#0a0a0a;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;"></div>
+          <div>
+            <div id="modal-title" style="font-family:var(--serif);font-size:16px;font-weight:600;color:var(--text);margin-bottom:3px;"></div>
+            <div id="modal-artist" style="font-size:13px;color:var(--muted);"></div>
+            <div id="modal-year" style="font-size:11px;color:var(--dim);margin-top:2px;"></div>
+          </div>
+        </div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;">Ajouter à :</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button onclick="addToTarget('collection')" style="background:var(--accent);color:var(--bg);border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);">▣ Ajouter à ma collection</button>
+          <button onclick="addToTarget('wishlist')" style="background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);">♡ Ajouter à ma wishlist</button>
+          <button onclick="closeAddModal()" style="background:transparent;color:var(--muted);border:none;padding:8px;font-size:13px;cursor:pointer;font-family:var(--sans);">Annuler</button>
+        </div>
+      </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) closeAddModal(); });
+    document.body.appendChild(modal);
+  }
+  // Fill modal
+  document.getElementById('modal-title').textContent  = album.title;
+  document.getElementById('modal-artist').textContent = album.artist;
+  document.getElementById('modal-year').textContent   = album.year + (album.label ? ' · ' + album.label : '');
+  document.getElementById('modal-cover').innerHTML    = makeVinylDisc(48, album.color || '#7ab84a');
+  modal.style.display = 'flex';
+}
+
+function closeAddModal() {
+  const m = document.getElementById('add-modal');
+  if (m) m.style.display = 'none';
+  pendingAlbum = null;
+}
+
+function addToTarget(target) {
+  if (!pendingAlbum) return;
+  const item = { ...pendingAlbum, addedAt: new Date().toISOString() };
+  if (target === 'collection') {
+    if (myCollection.find(v => v.mbid === item.mbid)) {
+      showToast('Déjà dans ta collection !', '#e8c547'); closeAddModal(); return;
+    }
+    myCollection.push(item); saveCollection();
+    showToast('✓ "' + item.title + '" ajouté à ta collection !', 'var(--accent)');
+  } else {
+    if (myWishlist.find(v => v.mbid === item.mbid)) {
+      showToast('Déjà dans ta wishlist !', '#e8c547'); closeAddModal(); return;
+    }
+    myWishlist.push(item); saveWishlist();
+    showToast('♥ "' + item.title + '" ajouté à ta wishlist !', '#9b7aee');
+  }
+  closeAddModal();
+}
+
+function showToast(msg, color) {
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${color};color:${color === 'var(--accent)' ? 'var(--bg)' : '#fff'};padding:12px 18px;border-radius:12px;font-size:13px;font-weight:500;z-index:99999;animation:fadeIn 0.2s ease;font-family:var(--sans);`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function makeVinylDisc(size, color) {
+  const d = Math.round(size * 0.64), c = Math.round(size * 0.2), h = Math.round(size * 0.09);
+  return `<div style="width:${d}px;height:${d}px;border-radius:50%;background:conic-gradient(#0a0a0a 0deg,#1a1a1a 35deg,#0a0a0a 70deg,#1a1a1a 105deg,#0a0a0a 140deg,#1a1a1a 175deg,#0a0a0a 210deg,#1a1a1a 245deg,#0a0a0a 280deg,#1a1a1a 315deg,#0a0a0a 350deg,#1a1a1a 360deg);display:flex;align-items:center;justify-content:center;"><div style="width:${c}px;height:${c}px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;"><div style="width:${h}px;height:${h}px;border-radius:50%;background:${color};"></div></div></div>`;
+}
+
+
+// ── COVER ART LOADER (lazy, non-blocking) ──────────────────
+// Uses MusicBrainz Cover Art Archive via a proxy-friendly approach
+// Images load silently in the background — never block the UI
+
+const coverCache = {};
+
+function loadCover(mbid, targetId, size) {
+  if (!mbid || !targetId) return;
+  const el = document.getElementById(targetId);
+  if (!el) return;
+
+  // Already cached
+  if (coverCache[mbid]) {
+    if (coverCache[mbid] !== 'error') {
+      el.style.backgroundImage = `url(${coverCache[mbid]})`;
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+      el.innerHTML = '';
+    }
+    return;
+  }
+
+  // Try loading via an Image object — no fetch, no CORS issue
+  const img = new Image();
+  const url = `https://coverartarchive.org/release/${mbid}/front-${size || 250}`;
+
+  img.onload = () => {
+    coverCache[mbid] = url;
+    const current = document.getElementById(targetId);
+    if (current) {
+      current.style.backgroundImage = `url(${url})`;
+      current.style.backgroundSize = 'cover';
+      current.style.backgroundPosition = 'center';
+      current.style.borderRadius = current.style.borderRadius || '12px';
+      current.innerHTML = '';
+    }
+  };
+
+  img.onerror = () => {
+    coverCache[mbid] = 'error';
+    // Keep the vinyl placeholder, do nothing
+  };
+
+  // Set a 5s timeout — if no response, abort silently
+  const timeout = setTimeout(() => {
+    img.src = '';
+    coverCache[mbid] = 'error';
+  }, 5000);
+
+  img.onload = () => {
+    clearTimeout(timeout);
+    coverCache[mbid] = url;
+    const current = document.getElementById(targetId);
+    if (current) {
+      current.style.backgroundImage = `url(${url})`;
+      current.style.backgroundSize = 'cover';
+      current.style.backgroundPosition = 'center';
+      current.innerHTML = '';
+    }
+  };
+
+  img.onerror = () => {
+    clearTimeout(timeout);
+    coverCache[mbid] = 'error';
+  };
+
+  img.src = url;
+}
+
+// Load all covers on the current page after a short delay
+function loadPageCovers() {
+  setTimeout(() => {
+    document.querySelectorAll('[data-mbid][data-cover-id]').forEach(el => {
+      const mbid = el.getAttribute('data-mbid');
+      const id   = el.getAttribute('data-cover-id');
+      const size = el.getAttribute('data-cover-size') || '250';
+      loadCover(mbid, id, size);
+    });
+  }, 300);
+}
+
+// ── MUSICBRAINZ SEARCH ────────────────────────────────────────
+let searchTimer = null;
+const ACCENT_COLORS = ['#7ab84a','#e8724a','#5b8dee','#e8c547','#9b7aee','#4acaaa','#e05050','#d4a843'];
+
+async function onSearch(q) {
+  const res = document.getElementById('search-results');
+  clearTimeout(searchTimer);
+  if (!q || q.length < 2) { res.classList.remove('open'); return; }
+
+  // Show loading
+  res.innerHTML = `<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px;">
+    <div style="display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:8px;"></div>
+    Recherche en cours…
+  </div>`;
+  res.classList.add('open');
+
+  searchTimer = setTimeout(async () => {
+    try {
+      const url = `https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(q)}&limit=8&fmt=json`;
+      const resp = await fetch(url, { headers: { 'User-Agent': 'GroovelyApp/1.0 (maquette)' } });
+      if (!resp.ok) throw new Error('API error');
+      const data = await resp.json();
+      const releases = data.releases || [];
+
+      if (!releases.length) {
+        res.innerHTML = `<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px;">Aucun résultat pour "${q}"</div>`;
+        return;
+      }
+
+      res.innerHTML = releases.map((r, i) => {
+        const title  = r.title || '—';
+        const artist = r['artist-credit']?.[0]?.name || r['artist-credit']?.[0]?.artist?.name || '—';
+        const year   = r.date ? r.date.substring(0,4) : '';
+        const label  = r['label-info']?.[0]?.label?.name || '';
+        const mbid   = r.id;
+        const color  = ACCENT_COLORS[i % ACCENT_COLORS.length];
+        const disc   = makeVinylDisc(36, color);
+
+        const coverId = 'sr-cover-' + mbid.substring(0,8) + '-' + i;
+        return `<div class="search-result-item" onclick="showAddModal({title:'${escQ(title)}',artist:'${escQ(artist)}',year:'${year}',label:'${escQ(label)}',mbid:'${mbid}',color:'${color}'})">
+          <div id="${coverId}" data-mbid="${mbid}" data-cover-id="${coverId}" data-cover-size="50" style="width:40px;height:40px;border-radius:8px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);overflow:hidden;">${disc}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="sr-title">${title}</div>
+            <div class="sr-sub">${artist}${year ? ' · ' + year : ''}${label ? ' · ' + label : ''}</div>
+          </div>
+          <div style="display:flex;gap:5px;flex-shrink:0;">
+            <button class="sr-add" onclick="event.stopPropagation();showAddModal({title:'${escQ(title)}',artist:'${escQ(artist)}',year:'${year}',label:'${escQ(label)}',mbid:'${mbid}',color:'${color}'})">Ajouter</button>
+          </div>
+        </div>`;
+      }).join('');
+
+    } catch(e) {
+      res.innerHTML = `<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px;">⚠ Erreur de connexion. Vérifie ta connexion internet.</div>`;
+    }
+  }, 500);
+}
+
+function escQ(s) { return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,' '); }
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) {
+    document.getElementById('search-results').classList.remove('open');
+  }
+});
+
+
+// Init pages display
+document.querySelectorAll('.page:not(.active)').forEach(p => p.style.display = 'none');
+loadPageCovers();
+</script>
+</body>
+</html>
